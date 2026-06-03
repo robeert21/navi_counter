@@ -37,7 +37,15 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Build EXE
-        run: pyinstaller --collect-all pytchat --collect-all websockets jaxi.spec
+        run: >
+          pyinstaller gui.py
+          --name navi_counter
+          --noconsole
+          --onedir
+          --collect-all pytchat
+          --collect-all websockets
+          --add-data "overlay;overlay"
+          --hidden-import _secrets
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

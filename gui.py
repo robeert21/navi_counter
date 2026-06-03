@@ -213,8 +213,11 @@ class App(tk.Tk):
 
     def _on_close(self):
         self._running = False
-        if self._loop:
+        if self._loop and self._loop.is_running():
             self._loop.call_soon_threadsafe(self._loop.stop)
+        if self._thread and self._thread.is_alive():
+            self._thread.join(timeout=2)
+        self.quit()
         self.destroy()
 
     # ------------------------------------------------------------------ Async loop

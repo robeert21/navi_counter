@@ -1,13 +1,19 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from PyInstaller.utils.hooks import collect_all
+
+pytchat_datas, pytchat_binaries, pytchat_hiddenimports = collect_all("pytchat")
+
 a = Analysis(
     ["gui.py"],
     pathex=[],
-    binaries=[],
+    binaries=pytchat_binaries,
     datas=[
         ("overlay", "overlay"),
+        *pytchat_datas,
     ],
     hiddenimports=[
+        *pytchat_hiddenimports,
         "websockets",
         "websockets.server",
         "websockets.client",
@@ -16,16 +22,6 @@ a = Analysis(
         "websockets.legacy.client",
         "websockets.asyncio",
         "websockets.asyncio.server",
-        "google.api_core",
-        "google.auth",
-        "google.auth.transport",
-        "google.auth.transport.requests",
-        "google.oauth2",
-        "googleapiclient",
-        "googleapiclient.discovery",
-        "googleapiclient.http",
-        "httplib2",
-        "uritemplate",
     ],
     hookspath=[],
     hooksconfig={},

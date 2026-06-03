@@ -37,7 +37,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Build EXE
-        run: pyinstaller jaxi.spec
+        run: pyinstaller --collect-all pytchat --collect-all websockets jaxi.spec
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

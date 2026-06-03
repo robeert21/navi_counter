@@ -7,6 +7,8 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 from pathlib import Path
+from functools import partial
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 from ws_server import WebSocketServer
 from chat_reader import ChatReader
@@ -22,7 +24,16 @@ def _base_dir() -> Path:
 _BASE = _base_dir()
 COUNTER_FILE = str(_BASE / "counter.json")
 BATCH_SIZE = 1
-OVERLAY_PATH = str(_BASE / "overlay" / "index.html")
+OVERLAY_DIR = str(_BASE / "overlay")
+OVERLAY_PORT = 8766
+OVERLAY_URL = f"http://127.0.0.1:{OVERLAY_PORT}"
+
+
+def _start_overlay_server():
+    handler = partial(SimpleHTTPRequestHandler, directory=OVERLAY_DIR)
+    server = HTTPServer(("127.0.0.1", OVERLAY_PORT), handler)
+    t = threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
 
 
 def extract_video_id(url: str) -> str:
@@ -62,6 +73,7 @@ class App(tk.Tk):
         self.resizable(False, False)
         self.configure(bg="#1a1a2e")
 
+        _start_overlay_server()
         self._ws = WebSocketServer()
         self._ws.start()
 
@@ -142,6 +154,23 @@ class App(tk.Tk):
         self._status_lbl = tk.Label(status_row, text="oprit", bg=BG,
                                     fg=DIM, font=("Arial", 9))
         self._status_lbl.pack(side="left", padx=(4, 0))
+
+        # ── Overlay URL (pentru OBS)
+        overlay_row = tk.Frame(outer, bg=BG)
+        overlay_row.pack(fill="x", pady=(6, 0))
+
+        tk.Label(overlay_row, text="OBS URL:", bg=BG, fg=DIM,
+                 font=("Arial", 8)).pack(side="left")
+
+        overlay_lbl = tk.Label(overlay_row, text=OVERLAY_URL, bg=BG,
+                               fg=ACCENT, font=("Arial", 8), cursor="hand2")
+        overlay_lbl.pack(side="left", padx=(4, 0))
+
+        def _copy_url(_event=None):
+            self.clipboard_clear()
+            self.clipboard_append(OVERLAY_URL)
+
+        overlay_lbl.bind("<Button-1>", _copy_url)
 
     # ------------------------------------------------------------------ Actions
 

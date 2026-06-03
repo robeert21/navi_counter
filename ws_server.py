@@ -18,7 +18,7 @@ class WebSocketServer:
             self._clients.discard(websocket)
 
     async def _serve(self):
-        async with websockets.serve(self._handler, "localhost", WS_PORT):
+        async with websockets.serve(self._handler, "127.0.0.1", WS_PORT):
             print(f"[WebSocketServer] Listening on ws://localhost:{WS_PORT}")
             await asyncio.Future()  # run forever
 

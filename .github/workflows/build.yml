@@ -42,7 +42,6 @@ jobs:
           --name navi_counter
           --noconsole
           --onedir
-          --collect-all pytchat
           --collect-all websockets
           --add-data "overlay;overlay"
           --hidden-import _secrets

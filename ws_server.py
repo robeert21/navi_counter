@@ -9,9 +9,15 @@ class WebSocketServer:
     def __init__(self):
         self._clients: set = set()
         self._loop: asyncio.AbstractEventLoop | None = None
+        self._last_data: dict | None = None
 
     async def _handler(self, websocket):
         self._clients.add(websocket)
+        if self._last_data:
+            try:
+                await websocket.send(json.dumps(self._last_data))
+            except Exception:
+                pass
         try:
             await websocket.wait_closed()
         finally:
@@ -19,8 +25,8 @@ class WebSocketServer:
 
     async def _serve(self):
         async with websockets.serve(self._handler, "127.0.0.1", WS_PORT):
-            print(f"[WebSocketServer] Listening on ws://localhost:{WS_PORT}")
-            await asyncio.Future()  # run forever
+            print(f"[WebSocketServer] Listening on ws://127.0.0.1:{WS_PORT}")
+            await asyncio.Future()
 
     def _run_loop(self):
         self._loop = asyncio.new_event_loop()
@@ -32,6 +38,7 @@ class WebSocketServer:
         thread.start()
 
     def broadcast(self, data: dict):
+        self._last_data = data
         if not self._loop or not self._clients:
             return
         payload = json.dumps(data)

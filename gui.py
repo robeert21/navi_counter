@@ -81,6 +81,7 @@ class App(tk.Tk):
         self._loop: asyncio.AbstractEventLoop | None = None
         self._thread: threading.Thread | None = None
         self._count = load_counter()
+        self._ws.broadcast({"count": self._count})
 
         self._build_ui()
         self.protocol("WM_DELETE_WINDOW", self._on_close)

@@ -6,7 +6,6 @@ a = Analysis(
     binaries=[],
     datas=[
         ("overlay", "overlay"),
-        (".env", "."),
     ],
     hiddenimports=[
         "websockets",
@@ -42,7 +41,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="JaxiBot",
+    name="navi_counter",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -63,5 +62,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="JaxiBot",
+    name="navi_counter",
 )

@@ -23,12 +23,18 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Create .env from secrets
-        shell: bash
+      - name: Embed API keys
+        shell: python
         run: |
-          echo "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}" > .env
-          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
-          echo "WS_PORT=8765" >> .env
+          import os
+          yt = os.environ["YOUTUBE_API_KEY"]
+          gem = os.environ["GEMINI_API_KEY"]
+          with open("_secrets.py", "w") as f:
+              f.write(f'YOUTUBE_API_KEY = "{yt}"\n')
+              f.write(f'GEMINI_API_KEY = "{gem}"\n')
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Build EXE
         run: pyinstaller jaxi.spec
@@ -36,8 +42,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: JaxiBot-Windows
-          path: dist/JaxiBot/
+          name: navi_counter-Windows
+          path: dist/navi_counter/
           retention-days: 30
 
       - name: Create GitHub Release
@@ -45,5 +51,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/JaxiBot/**
+            dist/navi_counter/**
           generate_release_notes: true
